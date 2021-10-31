@@ -33,6 +33,24 @@ async function run() {
             res.json(result);
         })
 
+        //get all places api
+        app.get('/places', async (req, res) => {
+            const cursor = placesCollection.find({});
+            const places = await cursor.toArray();
+            res.send(places);
+        })
+
+        //get single Place
+        app.get('/places/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            console.log(id, query);
+            const place = await placesCollection.findOne(query);
+            console.log(place)
+            res.json(place);
+
+        })
+
         //booking post api
         app.post('/booking', async (req, res) => {
             const singlebooking = req.body
@@ -52,22 +70,40 @@ async function run() {
             res.json(result);
 
         })
+        // all booking api 
+        app.get('/booking', async (req, res) => {
+            const cursor = bookingCollection.find({});
+            const allBooking = await cursor.toArray();
+            res.send(allBooking);
 
-        //get all places api
-        app.get('/places', async (req, res) => {
-            const cursor = placesCollection.find({});
-            const places = await cursor.toArray();
-            res.send(places);
         })
 
-        app.get('/places/:id', async (req, res) => {
+        //Update status booking api
+        app.put('/booking/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            console.log(id, query);
-            const place = await placesCollection.findOne(query);
-            console.log(place)
-            res.json(place);
+            const updateStatus = req.body;
+            console.log(updateStatus);
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: updateStatus.status
 
+                },
+            };
+
+            const options = { upsert: true };
+            const result = await bookingCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+
+        })
+
+        //delete booking api
+        app.delete('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.json(result);
         })
     }
     finally {
