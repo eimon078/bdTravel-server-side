@@ -12,7 +12,7 @@ app.use(express.json());
 
 //MongoDB URI
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nxj01.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-// console.log(uri);
+
 
 //Create Mongodb Client
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -28,7 +28,6 @@ async function run() {
         //places post Api
         app.post('/places', async (req, res) => {
             const singlePlace = req.body
-            console.log('post Hiting', singlePlace)
             const result = await placesCollection.insertOne(singlePlace);
             res.json(result);
         })
@@ -44,9 +43,7 @@ async function run() {
         app.get('/places/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            console.log(id, query);
             const place = await placesCollection.findOne(query);
-            console.log(place)
             res.json(place);
 
         })
@@ -54,7 +51,6 @@ async function run() {
         //booking post api
         app.post('/booking', async (req, res) => {
             const singlebooking = req.body
-            console.log('post booking', singlebooking)
             const result = await bookingCollection.insertOne(singlebooking);
             res.json(result);
         })
@@ -63,10 +59,8 @@ async function run() {
         app.get('/booking/:id', async (req, res) => {
             const id = req.params.id;
             const query = { email: id }
-            console.log(id, query);
             const cursor = bookingCollection.find(query);
             const result = await cursor.toArray();
-            console.log(result)
             res.json(result);
 
         })
@@ -82,7 +76,6 @@ async function run() {
         app.put('/booking/:id', async (req, res) => {
             const id = req.params.id;
             const updateStatus = req.body;
-            console.log(updateStatus);
             const filter = { _id: ObjectId(id) };
             const updateDoc = {
                 $set: {
@@ -100,7 +93,6 @@ async function run() {
         //delete booking api
         app.delete('/booking/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const result = await bookingCollection.deleteOne(query);
             res.json(result);
